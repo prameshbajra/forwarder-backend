@@ -3,17 +3,17 @@ import boto3
 import traceback
 
 SES_CLIENT = boto3.client('ses')
-SENDER_EMAIL = os.environ.get("sender_email", "")
-RECEIVER_EMAIL = os.environ.get("receiver_email", "")
+SENDER_EMAIL = os.environ.get('sender_email', '')
+RECEIVER_EMAIL = os.environ.get('receiver_email', '')
 
 
 def send_email(receiver_address: str, sender_address: str,
                message: str) -> bool:
     try:
-        if SENDER_EMAIL is "" or RECEIVER_EMAIL is "":
-            print("Either Sender or Receiver email is empty")
-            print("Sender email: ", SENDER_EMAIL)
-            print("Recevier email : ", RECEIVER_EMAIL)
+        if SENDER_EMAIL == '' or RECEIVER_EMAIL == '':
+            print('Either Sender or Receiver email is empty')
+            print('Sender email: ', SENDER_EMAIL)
+            print('Recevier email : ', RECEIVER_EMAIL)
             return False
         response = SES_CLIENT.send_email(
             Destination={
@@ -48,7 +48,7 @@ def send_email(receiver_address: str, sender_address: str,
             },
             Source=SENDER_EMAIL,
         )
-        print("Response from SES : ", response)
+        print('Response from SES : ', response)
         return True
     except Exception as e:
         traceback.format_exc()
