@@ -1,4 +1,4 @@
 def lambda_handler(event, context):
     print("Event: ", event)
-    print("Event: ", context)
+    print("Context: ", context)
     return True
