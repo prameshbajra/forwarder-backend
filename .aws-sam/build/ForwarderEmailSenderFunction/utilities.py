@@ -1,4 +1,5 @@
 import os
+from typing import Any
 import boto3
 import traceback
 
@@ -7,14 +8,13 @@ SENDER_EMAIL = os.environ.get('sender_email', '')
 RECEIVER_EMAIL = os.environ.get('receiver_email', '')
 
 
-def send_email(receiver_address: str, sender_address: str,
-               message: str) -> bool:
+def send_email(device_details: Any, sender_address: str, message: str) -> bool:
     try:
         if SENDER_EMAIL == '' or RECEIVER_EMAIL == '':
-            print('Either Sender or Receiver email is empty')
-            print('Sender email: ', SENDER_EMAIL)
-            print('Recevier email : ', RECEIVER_EMAIL)
             return False
+        device_details_string = ''
+        for key, value in device_details.items():
+            device_details_string += f'<b>{key}</b> : <i>{value}</i> <br>'
         response = SES_CLIENT.send_email(
             Destination={
                 'ToAddresses': [RECEIVER_EMAIL],
@@ -28,22 +28,23 @@ def send_email(receiver_address: str, sender_address: str,
                         'Data':
                         f'''
                         <html>
-                            <strong>
-                                Received from : {receiver_address}<br>
+                            <h3>
                                 Sender Address: {sender_address} <br>
                                 <br>
                                 Message: {message}
-                                <br><br>
-                            </strong>
+                            </h3>
+                            <br><br>
+                            <h3> Device Details </h3>
+                            <hr>
+                            {device_details_string}
+                            <hr>
                         </html>
                         ''',
                     },
                 },
                 'Subject': {
-                    'Charset':
-                    'UTF-8',
-                    'Data':
-                    f'Message from: {sender_address} in number {receiver_address}',
+                    'Charset': 'UTF-8',
+                    'Data': f'SMS from: {sender_address}',
                 },
             },
             Source=SENDER_EMAIL,
